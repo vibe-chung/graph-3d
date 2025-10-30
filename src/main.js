@@ -44,7 +44,7 @@ function getColorForType(type) {
         'tertiary': new Color3(0.3, 0.3, 1),     // Blue
         'default': new Color3(0.8, 0.8, 0.3)     // Yellow
     };
-    return colorMap[type] || colorMap['default'];
+    return colorMap[type] || colorMap.default;
 }
 
 // Helper function to calculate circular layout positions
@@ -72,11 +72,11 @@ const nodes = calculateCircularLayout(nodesData);
 const edges = edgesData.map(edge => ({
     from: edge.source,
     to: edge.target,
-    weight: edge.weight,
-    type: edge.type,
-    dayOfMonth: edge.dayOfMonth,
-    tags: edge.tags,
-    notes: edge.notes
+    weight: edge.weight || 0,
+    type: edge.type || 'default',
+    dayOfMonth: edge.dayOfMonth || null,
+    tags: edge.tags || [],
+    notes: edge.notes || ''
 }));
 
 // Create nodes as spheres
