@@ -68,7 +68,6 @@ nodes.forEach(node => {
 function createArrow(from, to, scene) {
     const direction = to.subtract(from);
     const length = direction.length();
-    const midpoint = Vector3.Lerp(from, to, 0.5);
     
     // Create cylinder for arrow shaft
     const cylinder = MeshBuilder.CreateCylinder(
@@ -86,10 +85,11 @@ function createArrow(from, to, scene) {
     // Calculate rotation to align with direction
     const axis = direction.normalize();
     const angle = Math.acos(Vector3.Dot(axis, Vector3.Up()));
-    const rotationAxis = Vector3.Cross(Vector3.Up(), axis).normalize();
+    const rotationAxis = Vector3.Cross(Vector3.Up(), axis);
     if (rotationAxis.length() > 0) {
+        const normalizedRotationAxis = rotationAxis.normalize();
         cylinder.rotationQuaternion = null;
-        cylinder.rotate(rotationAxis, angle);
+        cylinder.rotate(normalizedRotationAxis, angle);
     }
     
     // Create cone for arrowhead
@@ -106,8 +106,9 @@ function createArrow(from, to, scene) {
     // Position and orient the cone
     cone.position = Vector3.Lerp(from, to, 0.75);
     if (rotationAxis.length() > 0) {
+        const normalizedRotationAxis = rotationAxis.normalize();
         cone.rotationQuaternion = null;
-        cone.rotate(rotationAxis, angle);
+        cone.rotate(normalizedRotationAxis, angle);
     }
     
     // Material for arrows
