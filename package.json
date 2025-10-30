@@ -1,0 +1,20 @@
+{
+  "name": "graph-3d",
+  "version": "1.0.0",
+  "description": "Babylon.js application that represents a node based 3D directed graph",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["babylon.js", "3d", "graph", "visualization"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babylonjs/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
