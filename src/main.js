@@ -53,13 +53,12 @@ groundMaterial.lineColor = new Color3(0.4, 0.45, 0.55); // Grid line color (ligh
 groundMaterial.opacity = 0.98;
 ground.material = groundMaterial;
 
-// Create a gradient sky dome for Unity-like atmosphere
+// Create sky dome for Unity-like atmosphere
 const skybox = MeshBuilder.CreateBox('skyBox', { size: 1000.0 }, scene);
 const skyboxMaterial = new StandardMaterial('skyBoxMaterial', scene);
 skyboxMaterial.backFaceCulling = false;
 skyboxMaterial.disableLighting = true;
-// Create a gradient from darker bottom to lighter top
-skyboxMaterial.emissiveColor = new Color3(0.2, 0.25, 0.35); // Base color
+skyboxMaterial.emissiveColor = new Color3(0.2, 0.25, 0.35); // Sky color matching scene background
 skybox.material = skyboxMaterial;
 skybox.infiniteDistance = true;
 
