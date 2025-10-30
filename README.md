@@ -8,10 +8,12 @@ This is a 3D visualization of a directed graph using Babylon.js. Nodes are repre
 
 ## Features
 
-- 3D spherical nodes with customizable colors and sizes
+- 3D spherical nodes with customizable colors based on type
 - Directed arrows showing relationships between nodes
 - Interactive camera controls (rotate, zoom, pan)
-- Sample 3-node network demonstrating the concept
+- JSON-based data import for nodes and edges
+- Automatic circular layout algorithm for node positioning
+- Support for rich node and edge metadata
 
 ## Getting Started
 
@@ -54,18 +56,50 @@ npm run preview
 
 ## Current Implementation
 
-The skeleton project includes:
-- 3 nodes with different colors (red, green, blue) and sizes
-- Directed edges forming a cycle: Node 1 → Node 2 → Node 3 → Node 1
-- Interactive 3D camera
-- Basic lighting setup
+The project loads graph data from JSON files:
+
+### Node Format (`nodes.json`)
+```json
+[
+  {
+    "id": "node1",
+    "name": "Node Name",
+    "type": "primary",
+    "tags": ["tag1", "tag2"]
+  }
+]
+```
+
+Supported node types and their colors:
+- `primary` - Red
+- `secondary` - Green  
+- `tertiary` - Blue
+- `default` - Yellow
+
+### Edge Format (`edges.json`)
+```json
+[
+  {
+    "source": "node1",
+    "target": "node2",
+    "weight": 1172,
+    "type": "connection-type",
+    "dayOfMonth": 1,
+    "tags": ["tag"],
+    "notes": "Description"
+  }
+]
+```
+
+The application automatically positions nodes in a circular layout and renders them as colored 3D spheres with directed arrows representing edges.
 
 ## Future Enhancements
 
 This is a foundation that can be extended with:
-- Dynamic graph loading from data sources
-- Node labels and metadata
-- Interactive node selection
-- Custom styling options
-- Graph layout algorithms
-- Animation effects
+- Advanced graph layout algorithms (force-directed, hierarchical, etc.)
+- Node labels and interactive tooltips
+- Interactive node selection and highlighting
+- Custom styling options per node/edge
+- Animation effects and transitions
+- Graph filtering and search capabilities
+- Export functionality
