@@ -8,11 +8,17 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["babylon.js", "3d", "graph", "visualization"],
+  "keywords": [
+    "babylon.js",
+    "3d",
+    "graph",
+    "visualization"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babylonjs/core": "^7.0.0"
+    "@babylonjs/core": "^7.0.0",
+    "@babylonjs/materials": "^7.54.3"
   },
   "devDependencies": {
     "vite": "^5.0.0"
