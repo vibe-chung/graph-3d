@@ -9,6 +9,10 @@ import {
     Color3
 } from '@babylonjs/core';
 
+// Import JSON data
+import nodesData from '../nodes.json';
+import edgesData from '../edges.json';
+
 // Create the Babylon.js engine
 const canvas = document.getElementById('renderCanvas');
 const engine = new Engine(canvas, true);
@@ -32,19 +36,48 @@ camera.attachControl(canvas, true);
 const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 light.intensity = 0.8;
 
-// Node data structure
-const nodes = [
-    { id: 1, position: new Vector3(-5, 0, 0), color: new Color3(1, 0.3, 0.3), radius: 1 },
-    { id: 2, position: new Vector3(0, 3, 0), color: new Color3(0.3, 1, 0.3), radius: 1.5 },
-    { id: 3, position: new Vector3(5, 0, 0), color: new Color3(0.3, 0.3, 1), radius: 0.8 }
-];
+// Helper function to generate colors based on node type
+function getColorForType(type) {
+    const colorMap = {
+        'primary': new Color3(1, 0.3, 0.3),      // Red
+        'secondary': new Color3(0.3, 1, 0.3),    // Green
+        'tertiary': new Color3(0.3, 0.3, 1),     // Blue
+        'default': new Color3(0.8, 0.8, 0.3)     // Yellow
+    };
+    return colorMap[type] || colorMap['default'];
+}
 
-// Edges data structure (directed graph)
-const edges = [
-    { from: 1, to: 2 },
-    { from: 2, to: 3 },
-    { from: 3, to: 1 }
-];
+// Helper function to calculate circular layout positions
+function calculateCircularLayout(nodes, radius = 8) {
+    const angleStep = (2 * Math.PI) / nodes.length;
+    return nodes.map((node, index) => {
+        const angle = index * angleStep;
+        return {
+            ...node,
+            position: new Vector3(
+                radius * Math.cos(angle),
+                0,
+                radius * Math.sin(angle)
+            ),
+            color: getColorForType(node.type),
+            radius: 1.0  // Default radius for all nodes
+        };
+    });
+}
+
+// Convert JSON data to internal format
+const nodes = calculateCircularLayout(nodesData);
+
+// Convert edges from JSON format (source/target) to internal format (from/to with node ids)
+const edges = edgesData.map(edge => ({
+    from: edge.source,
+    to: edge.target,
+    weight: edge.weight,
+    type: edge.type,
+    dayOfMonth: edge.dayOfMonth,
+    tags: edge.tags,
+    notes: edge.notes
+}));
 
 // Create nodes as spheres
 const nodeMeshes = {};

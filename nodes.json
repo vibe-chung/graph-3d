@@ -1,0 +1,20 @@
+[
+  {
+    "id": "node1",
+    "name": "First Node",
+    "type": "primary",
+    "tags": ["important", "start"]
+  },
+  {
+    "id": "node2",
+    "name": "Second Node",
+    "type": "secondary",
+    "tags": ["middle"]
+  },
+  {
+    "id": "node3",
+    "name": "Third Node",
+    "type": "primary",
+    "tags": ["important", "end"]
+  }
+]

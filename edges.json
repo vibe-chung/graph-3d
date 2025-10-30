@@ -1,0 +1,29 @@
+[
+  {
+    "source": "node1",
+    "target": "node2",
+    "weight": 1172,
+    "type": "strong",
+    "dayOfMonth": 1,
+    "tags": ["primary-connection"],
+    "notes": "Connection from first to second"
+  },
+  {
+    "source": "node2",
+    "target": "node3",
+    "weight": 850,
+    "type": "medium",
+    "dayOfMonth": 15,
+    "tags": ["secondary-connection"],
+    "notes": "Connection from second to third"
+  },
+  {
+    "source": "node3",
+    "target": "node1",
+    "weight": 500,
+    "type": "weak",
+    "dayOfMonth": 28,
+    "tags": ["return-connection"],
+    "notes": "Connection back to first"
+  }
+]
