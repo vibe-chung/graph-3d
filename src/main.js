@@ -294,7 +294,9 @@ function toggleLabels() {
     updateLabelVisibility();
     
     // Update button text
-    toggleButton.textBlock.text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
+    if (toggleButton.children && toggleButton.children.length > 0) {
+        toggleButton.children[0].text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
+    }
 }
 
 // Create toggle button
