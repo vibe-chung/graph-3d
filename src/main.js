@@ -163,8 +163,6 @@ const edges = edgesData.map(edge => ({
 // Convert JSON data to internal format with 3D hierarchical layout
 const nodes = calculateHierarchicalLayout(nodesData, edges);
 
-// (edges already converted above, remove duplicate conversion)
-
 // Create nodes as spheres
 const nodeMeshes = {};
 nodes.forEach(node => {
