@@ -161,8 +161,16 @@ const edges = edgesData.map(edge => ({
     notes: edge.notes || ''
 }));
 
+// Filter out disconnected nodes (nodes with no edges)
+const connectedNodeIds = new Set();
+edges.forEach(edge => {
+    connectedNodeIds.add(edge.from);
+    connectedNodeIds.add(edge.to);
+});
+const connectedNodes = nodesData.filter(node => connectedNodeIds.has(node.id));
+
 // Convert JSON data to internal format with 3D hierarchical layout
-const nodes = calculateHierarchicalLayout(nodesData, edges);
+const nodes = calculateHierarchicalLayout(connectedNodes, edges);
 
 // Create nodes as spheres
 const nodeMeshes = {};
