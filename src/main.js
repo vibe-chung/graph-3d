@@ -311,11 +311,12 @@ toggleButton.onPointerClickObservable.add(toggleLabels);
 advancedTexture.addControl(toggleButton);
 
 // Add keyboard shortcut for 'L' key
-window.addEventListener('keydown', (event) => {
+const handleKeydown = (event) => {
     if (event.key === 'l' || event.key === 'L') {
         toggleLabels();
     }
-});
+};
+window.addEventListener('keydown', handleKeydown);
 
 // Initialize labels (hidden by default)
 createLabels();
@@ -326,6 +327,15 @@ engine.runRenderLoop(() => {
 });
 
 // Handle window resize
-window.addEventListener('resize', () => {
+const handleResize = () => {
     engine.resize();
+};
+window.addEventListener('resize', handleResize);
+
+// Cleanup on window unload
+window.addEventListener('beforeunload', () => {
+    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('resize', handleResize);
+    scene.dispose();
+    engine.dispose();
 });
