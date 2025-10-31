@@ -262,24 +262,28 @@ const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
 const labelTextBlocks = {};
 let labelsVisible = false;
 
-// Function to create or update labels
-function createLabels() {
+// Function to create all labels (called once during initialization)
+function createAllLabels() {
     Object.keys(nodeLabels).forEach(nodeId => {
         const { node, sphere } = nodeLabels[nodeId];
         
-        if (!labelTextBlocks[nodeId]) {
-            const label = new GUI.TextBlock();
-            label.text = node.name;
-            label.color = 'white';
-            label.fontSize = 14;
-            label.outlineWidth = 2;
-            label.outlineColor = 'black';
-            advancedTexture.addControl(label);
-            label.linkWithMesh(sphere);
-            label.linkOffsetY = -30; // Position above the sphere
-            labelTextBlocks[nodeId] = label;
-        }
-        
+        const label = new GUI.TextBlock();
+        label.text = node.name;
+        label.color = 'white';
+        label.fontSize = 14;
+        label.outlineWidth = 2;
+        label.outlineColor = 'black';
+        label.isVisible = labelsVisible;
+        advancedTexture.addControl(label);
+        label.linkWithMesh(sphere);
+        label.linkOffsetY = -30; // Position above the sphere
+        labelTextBlocks[nodeId] = label;
+    });
+}
+
+// Function to update label visibility
+function updateLabelVisibility() {
+    Object.keys(labelTextBlocks).forEach(nodeId => {
         labelTextBlocks[nodeId].isVisible = labelsVisible;
     });
 }
@@ -287,12 +291,10 @@ function createLabels() {
 // Function to toggle labels
 function toggleLabels() {
     labelsVisible = !labelsVisible;
-    createLabels();
+    updateLabelVisibility();
     
     // Update button text
-    if (toggleButton) {
-        toggleButton.textBlock.text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
-    }
+    toggleButton.textBlock.text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
 }
 
 // Create toggle button
@@ -310,6 +312,9 @@ toggleButton.left = '-10px';
 toggleButton.onPointerClickObservable.add(toggleLabels);
 advancedTexture.addControl(toggleButton);
 
+// Initialize labels (create them once, hidden by default)
+createAllLabels();
+
 // Add keyboard shortcut for 'L' key
 const handleKeydown = (event) => {
     if (event.key === 'l' || event.key === 'L') {
@@ -317,9 +322,6 @@ const handleKeydown = (event) => {
     }
 };
 window.addEventListener('keydown', handleKeydown);
-
-// Initialize labels (hidden by default)
-createLabels();
 
 // Run the render loop
 engine.runRenderLoop(() => {
