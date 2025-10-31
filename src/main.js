@@ -73,28 +73,83 @@ function getColorForType(type) {
     return colorMap[type] || colorMap.default;
 }
 
-// Helper function to calculate circular layout positions
-function calculateCircularLayout(nodes, radius = 8) {
-    const angleStep = (2 * Math.PI) / nodes.length;
-    return nodes.map((node, index) => {
-        const angle = index * angleStep;
-        return {
-            ...node,
-            position: new Vector3(
-                radius * Math.cos(angle),
-                0,
-                radius * Math.sin(angle)
-            ),
-            color: getColorForType(node.type),
-            radius: 1.0  // Default radius for all nodes
-        };
+// Helper function to calculate 3D hierarchical layout based on connectivity
+function calculateHierarchicalLayout(nodes, edges) {
+    // Calculate connectivity for each node (incoming + outgoing edges)
+    const nodeConnections = {};
+    nodes.forEach(node => {
+        nodeConnections[node.id] = { incoming: 0, outgoing: 0, total: 0 };
     });
+    
+    edges.forEach(edge => {
+        if (nodeConnections[edge.from]) {
+            nodeConnections[edge.from].outgoing++;
+            nodeConnections[edge.from].total++;
+        }
+        if (nodeConnections[edge.to]) {
+            nodeConnections[edge.to].incoming++;
+            nodeConnections[edge.to].total++;
+        }
+    });
+    
+    // Sort nodes by total connections (descending)
+    const sortedNodes = [...nodes].sort((a, b) => {
+        return nodeConnections[b.id].total - nodeConnections[a.id].total;
+    });
+    
+    // Define spherical layers based on connectivity
+    // Central node at origin, then arrange in concentric spheres
+    const positionedNodes = [];
+    let currentRadius = 0;
+    let nodesPerLayer = 1;
+    let nodesInCurrentLayer = 0;
+    let layerIndex = 0;
+    
+    sortedNodes.forEach((node, index) => {
+        if (index === 0) {
+            // Central node at origin
+            positionedNodes.push({
+                ...node,
+                position: new Vector3(0, 0, 0),
+                color: getColorForType(node.type),
+                radius: 1.2  // Slightly larger for the central node
+            });
+            currentRadius = 5;  // Start first layer at radius 5
+        } else {
+            // Distribute other nodes in 3D spherical layers
+            if (nodesInCurrentLayer >= nodesPerLayer) {
+                // Move to next layer
+                layerIndex++;
+                currentRadius += 5;
+                nodesInCurrentLayer = 0;
+                // Each layer can hold more nodes
+                nodesPerLayer = Math.ceil(8 + layerIndex * 4);
+            }
+            
+            // Calculate spherical coordinates
+            // Use golden angle spiral for even distribution
+            const phi = Math.acos(1 - 2 * (nodesInCurrentLayer + 0.5) / nodesPerLayer);
+            const theta = Math.PI * (1 + Math.sqrt(5)) * nodesInCurrentLayer;
+            
+            const x = currentRadius * Math.sin(phi) * Math.cos(theta);
+            const y = currentRadius * Math.cos(phi);
+            const z = currentRadius * Math.sin(phi) * Math.sin(theta);
+            
+            positionedNodes.push({
+                ...node,
+                position: new Vector3(x, y, z),
+                color: getColorForType(node.type),
+                radius: 1.0
+            });
+            
+            nodesInCurrentLayer++;
+        }
+    });
+    
+    return positionedNodes;
 }
 
-// Convert JSON data to internal format
-const nodes = calculateCircularLayout(nodesData);
-
-// Convert edges from JSON format (source/target) to internal format (from/to with node ids)
+// Convert edges from JSON format first (needed for layout calculation)
 const edges = edgesData.map(edge => ({
     from: edge.source,
     to: edge.target,
@@ -104,6 +159,9 @@ const edges = edgesData.map(edge => ({
     tags: edge.tags || [],
     notes: edge.notes || ''
 }));
+
+// Convert JSON data to internal format with 3D hierarchical layout
+const nodes = calculateHierarchicalLayout(nodesData, edges);
 
 // Create nodes as spheres
 const nodeMeshes = {};
