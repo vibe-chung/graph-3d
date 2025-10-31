@@ -10,6 +10,7 @@ import {
     Color4
 } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials/grid';
+import * as GUI from '@babylonjs/gui';
 
 // Import JSON data
 import nodesData from '../nodes.json';
@@ -165,6 +166,7 @@ const nodes = calculateHierarchicalLayout(nodesData, edges);
 
 // Create nodes as spheres
 const nodeMeshes = {};
+const nodeLabels = {};
 nodes.forEach(node => {
     const sphere = MeshBuilder.CreateSphere(
         `node-${node.id}`,
@@ -179,6 +181,9 @@ nodes.forEach(node => {
     sphere.material = material;
     
     nodeMeshes[node.id] = sphere;
+    
+    // Store node data for later label creation
+    nodeLabels[node.id] = { node, sphere };
 });
 
 // Helper function to create arrow (cylinder + cone)
@@ -252,12 +257,90 @@ edges.forEach((edge, index) => {
     }
 });
 
+// Create GUI for labels
+const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+const labelTextBlocks = {};
+let labelsVisible = false;
+
+// Function to create all labels (called once during initialization)
+function createAllLabels() {
+    Object.keys(nodeLabels).forEach(nodeId => {
+        const { node, sphere } = nodeLabels[nodeId];
+        
+        const label = new GUI.TextBlock();
+        label.text = node.name;
+        label.color = 'white';
+        label.fontSize = 14;
+        label.outlineWidth = 2;
+        label.outlineColor = 'black';
+        label.isVisible = labelsVisible;
+        advancedTexture.addControl(label);
+        label.linkWithMesh(sphere);
+        label.linkOffsetY = -30; // Position above the sphere
+        labelTextBlocks[nodeId] = label;
+    });
+}
+
+// Function to update label visibility
+function updateLabelVisibility() {
+    Object.keys(labelTextBlocks).forEach(nodeId => {
+        labelTextBlocks[nodeId].isVisible = labelsVisible;
+    });
+}
+
+// Function to toggle labels
+function toggleLabels() {
+    labelsVisible = !labelsVisible;
+    updateLabelVisibility();
+    
+    // Update button text
+    if (toggleButton.children && toggleButton.children.length > 0) {
+        toggleButton.children[0].text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
+    }
+}
+
+// Create toggle button
+const toggleButton = GUI.Button.CreateSimpleButton('toggleLabels', 'Show Labels (L)');
+toggleButton.width = '150px';
+toggleButton.height = '40px';
+toggleButton.color = 'white';
+toggleButton.cornerRadius = 5;
+toggleButton.background = 'rgba(0, 0, 0, 0.5)';
+toggleButton.thickness = 2;
+toggleButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+toggleButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+toggleButton.top = '10px';
+toggleButton.left = '-10px';
+toggleButton.onPointerClickObservable.add(toggleLabels);
+advancedTexture.addControl(toggleButton);
+
+// Initialize labels (create them once, hidden by default)
+createAllLabels();
+
+// Add keyboard shortcut for 'L' key
+const handleKeydown = (event) => {
+    if (event.key === 'l' || event.key === 'L') {
+        toggleLabels();
+    }
+};
+window.addEventListener('keydown', handleKeydown);
+
 // Run the render loop
 engine.runRenderLoop(() => {
     scene.render();
 });
 
 // Handle window resize
-window.addEventListener('resize', () => {
+const handleResize = () => {
     engine.resize();
+};
+window.addEventListener('resize', handleResize);
+
+// Cleanup on window unload
+window.addEventListener('beforeunload', () => {
+    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('resize', handleResize);
+    advancedTexture.dispose();
+    scene.dispose();
+    engine.dispose();
 });
