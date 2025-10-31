@@ -340,6 +340,7 @@ window.addEventListener('resize', handleResize);
 window.addEventListener('beforeunload', () => {
     window.removeEventListener('keydown', handleKeydown);
     window.removeEventListener('resize', handleResize);
+    advancedTexture.dispose();
     scene.dispose();
     engine.dispose();
 });
