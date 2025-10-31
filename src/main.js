@@ -40,8 +40,8 @@ const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 light.intensity = 0.8;
 
 // Create ground plane with grid (Unity-like)
-const ground = MeshBuilder.CreateGround('ground', { width: 40, height: 40 }, scene);
-ground.position.y = -2; // Place below the nodes
+const ground = MeshBuilder.CreateGround('ground', { width: 100, height: 100 }, scene);
+ground.position.y = -10; // Place below the nodes
 
 // Create and apply grid material
 const groundMaterial = new GridMaterial('groundMaterial', scene);
@@ -60,7 +60,7 @@ skyboxMaterial.backFaceCulling = false;
 skyboxMaterial.disableLighting = true;
 skyboxMaterial.emissiveColor = new Color3(0.2, 0.25, 0.35); // Sky color matching scene background
 skybox.material = skyboxMaterial;
-skybox.infiniteDistance = true;
+skybox.infiniteDistance = false;
 
 // Helper function to generate colors based on node type
 function getColorForType(type) {

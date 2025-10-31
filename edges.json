@@ -1,29 +1,326 @@
 [
   {
-    "source": "node1",
-    "target": "node2",
+    "source": "Paris",
+    "target": "Madrid",
     "weight": 1172,
-    "type": "strong",
+    "type": "Direct Debit",
     "dayOfMonth": 1,
-    "tags": ["primary-connection"],
-    "notes": "Connection from first to second"
+    "tags": ["Bill"],
+    "notes": ""
   },
   {
-    "source": "node2",
-    "target": "node3",
-    "weight": 850,
-    "type": "medium",
+    "source": "Boston",
+    "target": "Warsaw",
+    "weight": 25,
+    "type": "Standing Order",
     "dayOfMonth": 15,
-    "tags": ["secondary-connection"],
-    "notes": "Connection from second to third"
+    "tags": ["Transfer"],
+    "notes": ""
   },
   {
-    "source": "node3",
-    "target": "node1",
-    "weight": 500,
-    "type": "weak",
+    "source": "London",
+    "target": "Harare",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 5,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "London",
+    "target": "Rabat",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 21,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Boston",
+    "target": "Vienna",
+    "weight": 30,
+    "type": "Standing Order",
+    "dayOfMonth": 8,
+    "tags": ["Transfer"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Atlanta",
+    "weight": 17,
+    "type": "Direct Debit",
+    "dayOfMonth": 11,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Dallas",
+    "weight": 804,
+    "type": "Direct Debit",
+    "dayOfMonth": 21,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Chicago",
+    "weight": 0,
+    "type": "Direct Debit",
+    "dayOfMonth": 6,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Bangkok",
+    "weight": 180,
+    "type": "Standing Order",
+    "dayOfMonth": 2,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Miami",
+    "weight": 91,
+    "type": "Direct Debit",
+    "dayOfMonth": 25,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Taipei",
+    "weight": 44,
+    "type": "Direct Debit",
+    "dayOfMonth": 25,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Paris",
+    "target": "Nicosia",
+    "weight": 62,
+    "type": "Direct Debit",
+    "dayOfMonth": 25,
+    "tags": ["Bill"],
+    "notes": ""
+  },
+  {
+    "source": "Rome",
+    "target": "Lusaka",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 7,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Rome",
+    "target": "Manila",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 22,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Rome",
+    "target": "Cairo",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 27,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "London",
+    "target": "Nassau",
+    "weight": 34,
+    "type": "Payment",
+    "dayOfMonth": 17,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Dallas",
+    "target": "Doha",
+    "weight": 9,
+    "type": "Payment",
+    "dayOfMonth": 6,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Dallas",
+    "target": "Perth",
+    "weight": 26,
+    "type": "Payment",
+    "dayOfMonth": 2,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Vienna",
+    "target": "Accra",
+    "weight": 26,
+    "type": "Payment",
+    "dayOfMonth": 30,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Warsaw",
+    "target": "Durban",
+    "weight": 26,
+    "type": "Payment",
+    "dayOfMonth": 15,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Rome",
+    "target": "Muscat",
+    "weight": 10,
+    "type": "Direct Debit",
+    "dayOfMonth": 15,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "London",
+    "target": "Amman",
+    "weight": 12,
+    "type": "Direct Debit",
+    "dayOfMonth": 20,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "London",
+    "target": "Kyoto",
+    "weight": 94,
+    "type": "Direct Debit",
+    "dayOfMonth": 20,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Rome",
+    "target": "Nassau",
+    "weight": 5,
+    "type": "Direct Debit",
+    "dayOfMonth": 11,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "London",
+    "target": "Lima",
+    "weight": 179,
+    "type": "Direct Debit",
+    "dayOfMonth": 1,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Vienna",
+    "target": "Belize",
+    "weight": 8,
+    "type": "Direct Debit",
+    "dayOfMonth": 15,
+    "tags": ["Charity"],
+    "notes": ""
+  },
+  {
+    "source": "Vienna",
+    "target": "Quito",
+    "weight": 384,
+    "type": "Payment",
+    "dayOfMonth": 6,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Malaga",
+    "target": "Denver",
+    "weight": 1100,
+    "type": "Standing Order",
+    "dayOfMonth": 11,
+    "tags": [],
+    "notes": "Scheduled"
+  },
+  {
+    "source": "Denver",
+    "target": "Boston",
+    "weight": 1100,
+    "type": "Standing Order",
+    "dayOfMonth": 18,
+    "tags": [],
+    "notes": "Scheduled"
+  },
+  {
+    "source": "Boston",
+    "target": "Bristol",
+    "weight": 1600,
+    "type": "Standing Order",
+    "dayOfMonth": 25,
+    "tags": [],
+    "notes": "Scheduled"
+  },
+  {
+    "source": "London",
+    "target": "Prague",
+    "weight": 9,
+    "type": "Direct Debit",
+    "dayOfMonth": 25,
+    "tags": [],
+    "notes": ""
+  },
+  {
+    "source": "Boston",
+    "target": "Paris",
+    "weight": 1674,
+    "type": "Standing Order",
+    "dayOfMonth": 25,
+    "tags": [],
+    "notes": "Scheduled"
+  },
+  {
+    "source": "Boston",
+    "target": "Paris",
+    "weight": 1000,
+    "type": "Standing Order",
+    "dayOfMonth": 14,
+    "tags": [],
+    "notes": "TODO"
+  },
+  {
+    "source": "Boston",
+    "target": "Warsaw",
+    "weight": 250,
+    "type": "Standing Order",
+    "dayOfMonth": 1,
+    "tags": [],
+    "notes": "TODO"
+  },
+  {
+    "source": "Boston",
+    "target": "London",
+    "weight": 135,
+    "type": "Standing Order",
+    "dayOfMonth": 1,
+    "tags": [],
+    "notes": "TODO"
+  },
+  {
+    "source": "Berlin",
+    "target": "London",
+    "weight": 3837,
+    "type": "Payment",
     "dayOfMonth": 28,
-    "tags": ["return-connection"],
-    "notes": "Connection back to first"
+    "tags": [],
+    "notes": ""
   }
 ]

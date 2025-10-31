@@ -1,20 +1,272 @@
 [
   {
-    "id": "node1",
-    "name": "First Node",
+    "id": "London",
+    "name": "London",
     "type": "primary",
-    "tags": ["important", "start"]
+    "tags": ["Current"]
   },
   {
-    "id": "node2",
-    "name": "Second Node",
+    "id": "Paris",
+    "name": "Paris",
+    "type": "primary",
+    "tags": ["Current"]
+  },
+  {
+    "id": "Berlin",
+    "name": "Berlin",
+    "type": "Source",
+    "tags": []
+  },
+  {
+    "id": "Madrid",
+    "name": "Madrid",
+    "type": "Sink",
+    "tags": []
+  },
+  {
+    "id": "Rome",
+    "name": "Rome",
+    "type": "primary",
+    "tags": ["Current"]
+  },
+  {
+    "id": "Dublin",
+    "name": "Dublin",
+    "type": "primary",
+    "tags": ["Current"]
+  },
+  {
+    "id": "Oslo",
+    "name": "Oslo",
+    "type": "primary",
+    "tags": ["Travel"]
+  },
+  {
+    "id": "Vienna",
+    "name": "Vienna",
+    "type": "primary",
+    "tags": ["Travel"]
+  },
+  {
+    "id": "Warsaw",
+    "name": "Warsaw",
+    "type": "primary",
+    "tags": ["Travel"]
+  },
+  {
+    "id": "Denver",
+    "name": "Denver",
+    "type": "primary",
+    "tags": ["Travel"]
+  },
+  {
+    "id": "Boston",
+    "name": "Boston",
+    "type": "primary",
+    "tags": ["Current"]
+  },
+  {
+    "id": "Dallas",
+    "name": "Dallas",
     "type": "secondary",
-    "tags": ["middle"]
+    "tags": []
   },
   {
-    "id": "node3",
-    "name": "Third Node",
-    "type": "primary",
-    "tags": ["important", "end"]
+    "id": "Miami",
+    "name": "Miami",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Atlanta",
+    "name": "Atlanta",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Chicago",
+    "name": "Chicago",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Detroit",
+    "name": "Detroit",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Phoenix",
+    "name": "Phoenix",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Taipei",
+    "name": "Taipei",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Bangkok",
+    "name": "Bangkok",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Manila",
+    "name": "Manila",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Durban",
+    "name": "Durban",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Accra",
+    "name": "Accra",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Cairo",
+    "name": "Cairo",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Rabat",
+    "name": "Rabat",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Perth",
+    "name": "Perth",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Sydney",
+    "name": "Sydney",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Hobart",
+    "name": "Hobart",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Freetown",
+    "name": "Freetown",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Harare",
+    "name": "Harare",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Lusaka",
+    "name": "Lusaka",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Doha",
+    "name": "Doha",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Muscat",
+    "name": "Muscat",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Amman",
+    "name": "Amman",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Nicosia",
+    "name": "Nicosia",
+    "type": "Bill",
+    "tags": []
+  },
+  {
+    "id": "Bristol",
+    "name": "Bristol",
+    "type": "Investment",
+    "tags": []
+  },
+  {
+    "id": "Kyoto",
+    "name": "Kyoto",
+    "type": "Insurance",
+    "tags": []
+  },
+  {
+    "id": "Quebec",
+    "name": "Quebec",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Lima",
+    "name": "Lima",
+    "type": "secondary",
+    "tags": []
+  },
+  {
+    "id": "Quito",
+    "name": "Quito",
+    "type": "secondary",
+    "tags": []
+  },
+  {
+    "id": "Caracas",
+    "name": "Caracas",
+    "type": "Subscription",
+    "tags": []
+  },
+  {
+    "id": "Nassau",
+    "name": "Nassau",
+    "type": "secondary",
+    "tags": []
+  },
+  {
+    "id": "Belize",
+    "name": "Belize",
+    "type": "Charity",
+    "tags": []
+  },
+  {
+    "id": "Seville",
+    "name": "Seville",
+    "type": "Saving",
+    "tags": []
+  },
+  {
+    "id": "Malaga",
+    "name": "Malaga",
+    "type": "Source",
+    "tags": []
+  },
+  {
+    "id": "Prague",
+    "name": "Prague",
+    "type": "Insurance",
+    "tags": []
   }
 ]
