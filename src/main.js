@@ -74,6 +74,71 @@ function getColorForType(type) {
     return colorMap[type] || colorMap.default;
 }
 
+// Helper function to calculate node values based on edge weights
+function calculateNodeValues(nodes, edges) {
+    const nodeValues = {};
+    const incomingWeights = {};
+    const outgoingWeights = {};
+    
+    // Initialize values for all nodes
+    nodes.forEach(node => {
+        incomingWeights[node.id] = 0;
+        outgoingWeights[node.id] = 0;
+    });
+    
+    // Calculate incoming and outgoing weights for each node
+    edges.forEach(edge => {
+        if (outgoingWeights[edge.from] !== undefined) {
+            outgoingWeights[edge.from] += edge.weight;
+        }
+        if (incomingWeights[edge.to] !== undefined) {
+            incomingWeights[edge.to] += edge.weight;
+        }
+    });
+    
+    // Calculate node values based on role (source/sink/intermediate)
+    nodes.forEach(node => {
+        const incoming = incomingWeights[node.id];
+        const outgoing = outgoingWeights[node.id];
+        
+        if (outgoing > 0 && incoming === 0) {
+            // Source node: only has outgoing edges
+            nodeValues[node.id] = outgoing;
+        } else if (incoming > 0 && outgoing === 0) {
+            // Sink node: only has incoming edges
+            nodeValues[node.id] = incoming;
+        } else if (incoming > 0 && outgoing > 0) {
+            // Intermediate node: has both incoming and outgoing edges
+            nodeValues[node.id] = incoming - outgoing;
+        } else {
+            // No edges (disconnected node)
+            nodeValues[node.id] = 0;
+        }
+    });
+    
+    return nodeValues;
+}
+
+// Helper function to calculate radius based on node value using logarithmic scale
+function calculateNodeRadius(nodeValue, isCenter) {
+    if (isCenter) {
+        return 1.2; // Central node is slightly larger
+    }
+    
+    const absValue = Math.abs(nodeValue);
+    
+    // Avoid log of zero or negative numbers
+    if (absValue <= 0) {
+        return 0.5; // Default minimum radius for nodes with no value
+    }
+    
+    // Apply logarithmic scale: radius = 0.5 * log10(absValue)
+    const radius = 0.5 * Math.log10(absValue);
+    
+    // Ensure minimum radius for visibility
+    return Math.max(radius, 0.5);
+}
+
 // Helper function to calculate 3D hierarchical layout based on connectivity
 function calculateHierarchicalLayout(nodes, edges) {
     // Calculate connectivity for each node (incoming + outgoing edges)
@@ -93,6 +158,9 @@ function calculateHierarchicalLayout(nodes, edges) {
         }
     });
     
+    // Calculate node values
+    const nodeValues = calculateNodeValues(nodes, edges);
+    
     // Sort nodes by total connections (descending)
     const sortedNodes = [...nodes].sort((a, b) => {
         return nodeConnections[b.id].total - nodeConnections[a.id].total;
@@ -107,13 +175,17 @@ function calculateHierarchicalLayout(nodes, edges) {
     let layerIndex = 0;
     
     sortedNodes.forEach((node, index) => {
-        if (index === 0) {
+        const nodeValue = nodeValues[node.id];
+        const isCenter = index === 0;
+        
+        if (isCenter) {
             // Central node at origin
             positionedNodes.push({
                 ...node,
                 position: new Vector3(0, 0, 0),
                 color: getColorForType(node.type),
-                radius: 1.2  // Slightly larger for the central node
+                radius: calculateNodeRadius(nodeValue, true),
+                value: nodeValue
             });
             currentRadius = 5;  // Start first layer at radius 5
         } else {
@@ -140,7 +212,8 @@ function calculateHierarchicalLayout(nodes, edges) {
                 ...node,
                 position: new Vector3(x, y, z),
                 color: getColorForType(node.type),
-                radius: 1.0
+                radius: calculateNodeRadius(nodeValue, false),
+                value: nodeValue
             });
             
             nodesInCurrentLayer++;
@@ -276,7 +349,8 @@ function createAllLabels() {
         const { node, sphere } = nodeLabels[nodeId];
         
         const label = new GUI.TextBlock();
-        label.text = node.name;
+        // Display node value in brackets next to the node name
+        label.text = `${node.name} (${node.value})`;
         label.color = 'white';
         label.fontSize = 14;
         label.outlineWidth = 2;
