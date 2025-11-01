@@ -120,15 +120,11 @@ function calculateNodeValues(nodes, edges) {
 }
 
 // Helper function to calculate radius based on node value using logarithmic scale
-function calculateNodeRadius(nodeValue, isCenter) {
-    if (isCenter) {
-        return 1.2; // Central node is slightly larger
-    }
-    
+function calculateNodeRadius(nodeValue) {
     const absValue = Math.abs(nodeValue);
     
-    // Avoid log of zero or negative numbers
-    if (absValue <= 0) {
+    // Avoid log of zero
+    if (absValue === 0) {
         return 0.5; // Default minimum radius for nodes with no value
     }
     
@@ -136,6 +132,7 @@ function calculateNodeRadius(nodeValue, isCenter) {
     const radius = 0.5 * Math.log10(absValue);
     
     // Ensure minimum radius for visibility
+    // For values < 10, log10 will be < 1, so 0.5 * log10 will be < 0.5
     return Math.max(radius, 0.5);
 }
 
@@ -176,15 +173,14 @@ function calculateHierarchicalLayout(nodes, edges) {
     
     sortedNodes.forEach((node, index) => {
         const nodeValue = nodeValues[node.id];
-        const isCenter = index === 0;
         
-        if (isCenter) {
+        if (index === 0) {
             // Central node at origin
             positionedNodes.push({
                 ...node,
                 position: new Vector3(0, 0, 0),
                 color: getColorForType(node.type),
-                radius: calculateNodeRadius(nodeValue, true),
+                radius: calculateNodeRadius(nodeValue),
                 value: nodeValue
             });
             currentRadius = 5;  // Start first layer at radius 5
@@ -212,7 +208,7 @@ function calculateHierarchicalLayout(nodes, edges) {
                 ...node,
                 position: new Vector3(x, y, z),
                 color: getColorForType(node.type),
-                radius: calculateNodeRadius(nodeValue, false),
+                radius: calculateNodeRadius(nodeValue),
                 value: nodeValue
             });
             
