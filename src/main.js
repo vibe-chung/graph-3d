@@ -484,6 +484,10 @@ async function initializeGraph() {
                 edgeMesh.shaft.isVisible = true;
                 edgeMesh.head.isVisible = true;
             });
+            // Update label visibility - show all labels if labels are visible
+            Object.keys(labelTextBlocks).forEach(nodeId => {
+                labelTextBlocks[nodeId].isVisible = labelsVisible;
+            });
         } else {
             // Show only connected nodes and edges
             const connectedNodes = getConnectedNodes(selectedNodeId);
@@ -498,6 +502,11 @@ async function initializeGraph() {
                 const shouldBeVisible = connectedNodes.has(edgeMesh.from) && connectedNodes.has(edgeMesh.to);
                 edgeMesh.shaft.isVisible = shouldBeVisible;
                 edgeMesh.head.isVisible = shouldBeVisible;
+            });
+            
+            // Update label visibility - show only labels of visible nodes if labels are visible
+            Object.keys(labelTextBlocks).forEach(nodeId => {
+                labelTextBlocks[nodeId].isVisible = labelsVisible && connectedNodes.has(nodeId);
             });
         }
     }
