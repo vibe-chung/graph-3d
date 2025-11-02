@@ -7,7 +7,8 @@ import {
     MeshBuilder,
     StandardMaterial,
     Color3,
-    Color4
+    Color4,
+    PointerEventTypes
 } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials/grid';
 import * as GUI from '@babylonjs/gui';
@@ -361,7 +362,8 @@ async function initializeGraph() {
         return { shaft: cylinder, head: cone };
     }
 
-    // Create edges as directed arrows
+    // Create edges as directed arrows and store them
+    const edgeMeshes = [];
     edges.forEach((edge, index) => {
         const fromNode = nodes.find(n => n.id === edge.from);
         const toNode = nodes.find(n => n.id === edge.to);
@@ -372,7 +374,13 @@ async function initializeGraph() {
             const startPoint = fromNode.position.add(direction.scale(fromNode.radius));
             const endPoint = toNode.position.subtract(direction.scale(toNode.radius));
             
-            createArrow(startPoint, endPoint, scene);
+            const arrow = createArrow(startPoint, endPoint, scene);
+            edgeMeshes.push({
+                from: edge.from,
+                to: edge.to,
+                shaft: arrow.shaft,
+                head: arrow.head
+            });
         }
     });
 
@@ -444,6 +452,89 @@ async function initializeGraph() {
         }
     };
     window.addEventListener('keydown', handleKeydown);
+
+    // Node selection state
+    let selectedNodeId = null;
+
+    // Function to get connected nodes for a given node
+    function getConnectedNodes(nodeId) {
+        const connected = new Set();
+        connected.add(nodeId); // Include the selected node itself
+        
+        edges.forEach(edge => {
+            if (edge.from === nodeId) {
+                connected.add(edge.to);
+            }
+            if (edge.to === nodeId) {
+                connected.add(edge.from);
+            }
+        });
+        
+        return connected;
+    }
+
+    // Function to update visibility based on selection
+    function updateVisibility() {
+        if (selectedNodeId === null) {
+            // Show all nodes and edges
+            Object.keys(nodeMeshes).forEach(nodeId => {
+                nodeMeshes[nodeId].isVisible = true;
+            });
+            edgeMeshes.forEach(edgeMesh => {
+                edgeMesh.shaft.isVisible = true;
+                edgeMesh.head.isVisible = true;
+            });
+            // Update label visibility - show all labels if labels are visible
+            Object.keys(labelTextBlocks).forEach(nodeId => {
+                labelTextBlocks[nodeId].isVisible = labelsVisible;
+            });
+        } else {
+            // Show only connected nodes and edges
+            const connectedNodes = getConnectedNodes(selectedNodeId);
+            
+            // Update node visibility
+            Object.keys(nodeMeshes).forEach(nodeId => {
+                nodeMeshes[nodeId].isVisible = connectedNodes.has(nodeId);
+            });
+            
+            // Update edge visibility - show only edges between visible nodes
+            edgeMeshes.forEach(edgeMesh => {
+                const shouldBeVisible = connectedNodes.has(edgeMesh.from) && connectedNodes.has(edgeMesh.to);
+                edgeMesh.shaft.isVisible = shouldBeVisible;
+                edgeMesh.head.isVisible = shouldBeVisible;
+            });
+            
+            // Update label visibility - show only labels of visible nodes if labels are visible
+            Object.keys(labelTextBlocks).forEach(nodeId => {
+                labelTextBlocks[nodeId].isVisible = labelsVisible && connectedNodes.has(nodeId);
+            });
+        }
+    }
+
+    // Add click handling for node selection
+    scene.onPointerObservable.add((pointerInfo) => {
+        if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
+            const pickResult = pointerInfo.pickInfo;
+            if (pickResult.hit && pickResult.pickedMesh) {
+                const meshName = pickResult.pickedMesh.name;
+                // Check if it's a node (mesh name starts with "node-")
+                if (meshName.startsWith('node-')) {
+                    const nodeId = meshName.substring(5); // Remove "node-" prefix
+                    
+                    // Toggle selection
+                    if (selectedNodeId === nodeId) {
+                        // Deselect
+                        selectedNodeId = null;
+                    } else {
+                        // Select
+                        selectedNodeId = nodeId;
+                    }
+                    
+                    updateVisibility();
+                }
+            }
+        }
+    });
     
     // Return cleanup function for proper resource management
     return {
