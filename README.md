@@ -12,6 +12,7 @@ This is a 3D visualization of a directed graph using Babylon.js. Nodes are repre
 - Directed arrows showing relationships between nodes
 - Interactive camera controls (rotate, zoom, pan)
 - JSON-based data import for nodes and edges
+- **Configurable data sources** with multiple preset configurations
 - Automatic circular layout algorithm for node positioning
 - Support for rich node and edge metadata
 
@@ -38,6 +39,15 @@ npm run dev
 
 Then open your browser to `http://localhost:5173`
 
+#### Using Different Data Configurations
+
+By default, the application loads data from `nodes.json` and `edges.json`. You can switch between different data configurations using the `config` query parameter:
+
+- **Default configuration**: `http://localhost:5173` (loads `nodes.json` and `edges.json`)
+- **Example configuration**: `http://localhost:5173?config=example` (loads `nodes.example.json` and `edges.example.json`)
+
+You can add more configurations by editing the `configs` object in `src/main.js`.
+
 ### Build
 
 Build for production:
@@ -55,6 +65,42 @@ npm run preview
 ```
 
 ## Current Implementation
+
+### Configurable Data Loading
+
+The application supports multiple data configurations that can be selected via URL query parameters. Each configuration specifies which JSON files to load for nodes and edges.
+
+**Available Configurations:**
+
+- `default` - Loads `nodes.json` and `edges.json` (used when no config parameter is specified)
+- `example` - Loads `nodes.example.json` and `edges.example.json`
+
+**Usage:**
+```
+http://localhost:5173                    # Uses default config
+http://localhost:5173?config=example     # Uses example config
+http://localhost:5173?config=invalid     # Falls back to default config
+```
+
+**Adding New Configurations:**
+
+Edit the `configs` object in `src/main.js`:
+```javascript
+const configs = {
+    default: {
+        nodes: '../nodes.json',
+        edges: '../edges.json'
+    },
+    myconfig: {
+        nodes: '../my-nodes.json',
+        edges: '../my-edges.json'
+    }
+};
+```
+
+Then access it via `http://localhost:5173?config=myconfig`
+
+### Data Formats
 
 The project loads graph data from JSON files:
 
