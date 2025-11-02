@@ -368,6 +368,7 @@ async function initializeGraph() {
             const startPoint = fromNode.position.add(direction.scale(fromNode.radius));
             const endPoint = toNode.position.subtract(direction.scale(toNode.radius));
             
+            createArrow(startPoint, endPoint, scene);
         }
     });
 
@@ -450,14 +451,22 @@ async function initializeGraph() {
 // Initialize and start the graph
 initializeGraph().catch(error => {
     console.error('Failed to initialize graph:', error);
-    // Display error message to user
-    const canvas = document.getElementById('renderCanvas');
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-        ctx.fillStyle = 'white';
-        ctx.font = '20px Arial';
-        ctx.fillText(`Error loading graph: ${error.message}`, 50, 50);
-    }
+    // Display error message to user using DOM
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+    `;
+    errorDiv.textContent = `Error loading graph: ${error.message}`;
+    document.body.appendChild(errorDiv);
 });
 
 // Run the render loop
