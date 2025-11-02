@@ -40,7 +40,7 @@ function getConfig() {
 async function loadJSON(url) {
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error(`Failed to load ${url}: ${response.statusText}`);
+        throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
     }
     return await response.json();
 }
@@ -441,15 +441,22 @@ async function initializeGraph() {
     };
     window.addEventListener('keydown', handleKeydown);
     
-    // Cleanup on window unload
-    window.addEventListener('beforeunload', () => {
-        window.removeEventListener('keydown', handleKeydown);
-        advancedTexture.dispose();
-    });
+    // Return cleanup function for proper resource management
+    return {
+        dispose: () => {
+            window.removeEventListener('keydown', handleKeydown);
+            advancedTexture.dispose();
+        }
+    };
 }
 
+// Store reference to graph instance for cleanup
+let graphInstance = null;
+
 // Initialize and start the graph
-initializeGraph().catch(error => {
+initializeGraph().then(instance => {
+    graphInstance = instance;
+}).catch(error => {
     console.error('Failed to initialize graph:', error);
     // Display error message to user using DOM
     const errorDiv = document.createElement('div');
@@ -483,6 +490,9 @@ window.addEventListener('resize', handleResize);
 // Cleanup on window unload
 window.addEventListener('beforeunload', () => {
     window.removeEventListener('resize', handleResize);
+    if (graphInstance) {
+        graphInstance.dispose();
+    }
     scene.dispose();
     engine.dispose();
 });
