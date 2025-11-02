@@ -21,6 +21,10 @@ const configs = {
     example: {
         nodes: '../nodes.example.json',
         edges: '../edges.example.json'
+    },
+    private: {
+        nodes: '../private.nodes.json',
+        edges: '../private.edges.json'
     }
 };
 
