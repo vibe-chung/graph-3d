@@ -9,13 +9,23 @@ This is a 3D graph visualization application built with Babylon.js. The project 
 ```
 graph-3d/
 ├── src/
-│   └── main.js          # Main application entry point with Babylon.js scene setup
-├── nodes.json           # Node data (id, name, type, tags)
-├── edges.json           # Edge data (source, target, weight, type, etc.)
-├── index.html           # HTML entry point with canvas element
-├── package.json         # NPM dependencies and scripts
-├── vite.config.js       # Vite build configuration
-└── README.md            # Project documentation
+│   ├── main.js               # Main application orchestration and bootstrap
+│   ├── config.js             # Configuration management and data loading
+│   ├── sceneSetup.js         # Babylon.js scene, camera, lights, and environment setup
+│   ├── nodeUtils.js          # Node utilities (color, value calculation, radius)
+│   ├── layoutAlgorithm.js    # 3D hierarchical layout algorithm
+│   ├── graphRenderer.js      # Node and edge rendering (meshes and arrows)
+│   └── graphInteractions.js  # GUI controls and user interactions
+├── tests/
+│   ├── config.test.js        # Unit tests for configuration
+│   ├── nodeUtils.test.js     # Unit tests for node utilities
+│   └── layoutAlgorithm.test.js # Unit tests for layout algorithm
+├── nodes.json                # Node data (id, name, type, tags)
+├── edges.json                # Edge data (source, target, weight, type, etc.)
+├── index.html                # HTML entry point with canvas element
+├── package.json              # NPM dependencies and scripts
+├── vite.config.js            # Vite build configuration
+└── README.md                 # Project documentation
 ```
 
 ## Technologies Used
@@ -58,8 +68,11 @@ graph-3d/
    ```
 
 ### Testing
-- Currently, there is no test suite in this repository
-- Manual testing is done via the development server
+- Unit tests are written using Vitest
+- Tests are located in the `tests/` directory
+- Run tests with `npm test` or `npm run test:watch` for watch mode
+- Pure functions in `config.js`, `nodeUtils.js`, and `layoutAlgorithm.js` have comprehensive unit tests
+- Integration tests can be performed manually using the development server
 
 ### Linting
 - No linter is currently configured
@@ -72,6 +85,16 @@ graph-3d/
 - Use meaningful variable and function names
 - Keep functions focused and single-purpose
 - Add comments only for complex logic or algorithms
+- Export functions from modules that need to be tested or reused
+
+### Module Organization
+- **config.js**: Pure functions for configuration and data loading
+- **nodeUtils.js**: Pure utility functions for node-related calculations
+- **layoutAlgorithm.js**: Pure function for calculating node positions
+- **sceneSetup.js**: Scene initialization and environment setup
+- **graphRenderer.js**: Mesh creation and rendering logic
+- **graphInteractions.js**: User interface and event handling
+- **main.js**: Application orchestration, keeps all modules together
 
 ### Babylon.js Conventions
 - Create meshes using `MeshBuilder` factory methods
@@ -133,22 +156,29 @@ graph-3d/
 ## Common Tasks
 
 ### Adding a New Node Type
-1. Add color to `getColorForType()` in `src/main.js`
-2. Update README.md documentation
+1. Add color to `getColorForType()` in `src/nodeUtils.js`
+2. Add unit tests in `tests/nodeUtils.test.js`
+3. Update README.md documentation
 
 ### Changing Layout Algorithm
-- Modify `calculateCircularLayout()` function in `src/main.js`
+- Modify `calculateHierarchicalLayout()` function in `src/layoutAlgorithm.js`
+- Update unit tests in `tests/layoutAlgorithm.test.js`
 - Consider: force-directed, hierarchical, random, or grid layouts
 
 ### Modifying Arrow Appearance
-- Adjust arrow dimensions in `createArrow()` function
+- Adjust arrow dimensions in `createArrow()` function in `src/graphRenderer.js`
 - Change shaft diameter, length ratio, or cone size
 - Modify arrow material for different colors or effects
 
-### Adding Node Labels
-- Use `GUI.AdvancedDynamicTexture` from `@babylonjs/gui`
-- Add dependency: `npm install @babylonjs/gui`
-- Create text blocks attached to node positions
+### Adding New Interactions
+- Implement in `src/graphInteractions.js`
+- Follow the existing pattern for event handling and GUI controls
+- Ensure proper cleanup in the dispose() function
+
+### Adding New Utility Functions
+- Pure functions should go in appropriate utility modules (e.g., `nodeUtils.js`)
+- Always add corresponding unit tests
+- Export functions that need to be used by other modules
 
 ## Future Enhancement Ideas
 
@@ -163,9 +193,12 @@ graph-3d/
 ## Important Notes for Copilot
 
 - This is a visualization-focused project; performance matters for rendering
+- Code is now modularized for better maintainability and testability
+- Pure functions should be placed in utility modules and tested
 - Babylon.js uses a right-handed coordinate system
 - The scene renders continuously via `engine.runRenderLoop()`
 - Camera controls are built-in with `ArcRotateCamera`
 - Always test 3D changes visually in the browser
+- Run unit tests (`npm test`) after making changes to utility functions
 - JSON data files are imported statically; changes require rebuild
 - Keep bundle size in mind; Babylon.js is already large (~5MB)
