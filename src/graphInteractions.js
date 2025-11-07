@@ -1,5 +1,6 @@
 import { PointerEventTypes } from '@babylonjs/core';
 import * as GUI from '@babylonjs/gui';
+import { createDateState, formatDate } from './dateState.js';
 
 // Function to get connected nodes for a given node
 function getConnectedNodes(nodeId, edges) {
@@ -81,6 +82,136 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     // Initialize labels (create them once, hidden by default)
     createAllLabels();
 
+    // ===== Date Controls =====
+    
+    // Create date state manager
+    const dateState = createDateState();
+
+    // Date display at the top of the screen
+    const dateDisplay = new GUI.TextBlock();
+    dateDisplay.text = formatDate(dateState.getDate());
+    dateDisplay.color = 'white';
+    dateDisplay.fontSize = 24;
+    dateDisplay.fontWeight = 'bold';
+    dateDisplay.outlineWidth = 3;
+    dateDisplay.outlineColor = 'black';
+    dateDisplay.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    dateDisplay.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    dateDisplay.top = '20px';
+    advancedTexture.addControl(dateDisplay);
+
+    // Update date display when state changes
+    dateState.onUpdate((state) => {
+        dateDisplay.text = formatDate(state.date);
+        // Update play/pause button text
+        if (playPauseButton.children && playPauseButton.children.length > 0) {
+            playPauseButton.children[0].text = state.isPlaying ? '⏸' : '▶';
+        }
+        // Update speed button text
+        if (speedButton.children && speedButton.children.length > 0) {
+            speedButton.children[0].text = `${state.speedMultiplier}x`;
+        }
+    });
+
+    // Control panel at the bottom
+    const controlPanel = new GUI.StackPanel();
+    controlPanel.isVertical = false;
+    controlPanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    controlPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+    controlPanel.top = '-20px';
+    controlPanel.height = '50px';
+    advancedTexture.addControl(controlPanel);
+
+    // Previous day button
+    const prevButton = GUI.Button.CreateSimpleButton('prevDay', '◀');
+    prevButton.width = '50px';
+    prevButton.height = '50px';
+    prevButton.color = 'white';
+    prevButton.cornerRadius = 5;
+    prevButton.background = 'rgba(0, 0, 0, 0.5)';
+    prevButton.thickness = 2;
+    prevButton.fontSize = 24;
+    prevButton.onPointerClickObservable.add(() => {
+        dateState.previousDay();
+    });
+    controlPanel.addControl(prevButton);
+
+    // Spacer
+    const spacer1 = new GUI.Container();
+    spacer1.width = '10px';
+    controlPanel.addControl(spacer1);
+
+    // Play/Pause button
+    const playPauseButton = GUI.Button.CreateSimpleButton('playPause', '▶');
+    playPauseButton.width = '50px';
+    playPauseButton.height = '50px';
+    playPauseButton.color = 'white';
+    playPauseButton.cornerRadius = 5;
+    playPauseButton.background = 'rgba(0, 0, 0, 0.5)';
+    playPauseButton.thickness = 2;
+    playPauseButton.fontSize = 24;
+    playPauseButton.onPointerClickObservable.add(() => {
+        dateState.togglePlayPause();
+    });
+    controlPanel.addControl(playPauseButton);
+
+    // Spacer
+    const spacer2 = new GUI.Container();
+    spacer2.width = '10px';
+    controlPanel.addControl(spacer2);
+
+    // Next day button
+    const nextButton = GUI.Button.CreateSimpleButton('nextDay', '▶▶');
+    nextButton.width = '50px';
+    nextButton.height = '50px';
+    nextButton.color = 'white';
+    nextButton.cornerRadius = 5;
+    nextButton.background = 'rgba(0, 0, 0, 0.5)';
+    nextButton.thickness = 2;
+    nextButton.fontSize = 24;
+    nextButton.onPointerClickObservable.add(() => {
+        dateState.nextDay();
+    });
+    controlPanel.addControl(nextButton);
+
+    // Spacer
+    const spacer3 = new GUI.Container();
+    spacer3.width = '10px';
+    controlPanel.addControl(spacer3);
+
+    // Reset button
+    const resetButton = GUI.Button.CreateSimpleButton('reset', '↻');
+    resetButton.width = '50px';
+    resetButton.height = '50px';
+    resetButton.color = 'white';
+    resetButton.cornerRadius = 5;
+    resetButton.background = 'rgba(0, 0, 0, 0.5)';
+    resetButton.thickness = 2;
+    resetButton.fontSize = 28;
+    resetButton.onPointerClickObservable.add(() => {
+        dateState.reset();
+    });
+    controlPanel.addControl(resetButton);
+
+    // Spacer
+    const spacer4 = new GUI.Container();
+    spacer4.width = '10px';
+    controlPanel.addControl(spacer4);
+
+    // Speed multiplier button
+    const speedButton = GUI.Button.CreateSimpleButton('speed', '1x');
+    speedButton.width = '50px';
+    speedButton.height = '50px';
+    speedButton.color = 'white';
+    speedButton.cornerRadius = 5;
+    speedButton.background = 'rgba(0, 0, 0, 0.5)';
+    speedButton.thickness = 2;
+    speedButton.fontSize = 18;
+    speedButton.onPointerClickObservable.add(() => {
+        dateState.toggleSpeed();
+    });
+    controlPanel.addControl(speedButton);
+
     // Add keyboard shortcut for 'L' key
     const handleKeydown = (event) => {
         if (event.key === 'l' || event.key === 'L') {
@@ -159,6 +290,7 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     return {
         dispose: () => {
             window.removeEventListener('keydown', handleKeydown);
+            dateState.dispose();
             advancedTexture.dispose();
         }
     };
