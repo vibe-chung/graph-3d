@@ -30,7 +30,7 @@ export function createDateState() {
     let updateCallback = null;
 
     // Time constants
-    const BASE_DAY_DURATION = 1000; // 1 second = 1 day at 1x speed
+    const BASE_DAY_DURATION = 500; // 500ms = 1 day at 1x speed
 
     function notifyUpdate() {
         if (updateCallback) {

@@ -95,9 +95,12 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     dateDisplay.fontWeight = 'bold';
     dateDisplay.outlineWidth = 3;
     dateDisplay.outlineColor = 'black';
+    dateDisplay.height = '40px';
     dateDisplay.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     dateDisplay.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    dateDisplay.top = '20px';
+    dateDisplay.top = '10px';
+    dateDisplay.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    dateDisplay.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
     advancedTexture.addControl(dateDisplay);
 
     // Update date display when state changes
