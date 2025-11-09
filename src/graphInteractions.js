@@ -68,6 +68,8 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
         });
     }
 
+    // ...toggleLabelsButton will be created after all other controls...
+
     // Function to toggle labels
     function toggleLabels() {
         labelsVisible = !labelsVisible;
@@ -79,27 +81,11 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
         }
     }
 
-    // Create toggle button
-    const toggleLabelsButton = createGuiButton({
-        name: 'toggleLabels',
-        text: 'Show Labels (L)',
-        width: '150px',
-        height: '40px',
-        fontSize: 18,
-        onClick: toggleLabels
-    });
-    toggleLabelsButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    toggleLabelsButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    toggleLabelsButton.top = '10px';
-    toggleLabelsButton.left = '-10px';
-    toggleLabelsButton.isPointerBlocker = true;
-    advancedTexture.addControl(toggleLabelsButton);
 
     // Initialize labels (create them once, hidden by default)
     createAllLabels();
 
     // ===== Date Controls =====
-    
     // Create date state manager
     const dateState = createDateState();
 
@@ -117,20 +103,8 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     dateDisplay.top = '10px';
     dateDisplay.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
     dateDisplay.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    dateDisplay.isPointerBlocker = false;
     advancedTexture.addControl(dateDisplay);
-
-    // Update date display when state changes
-    dateState.onUpdate((state) => {
-        dateDisplay.text = formatDate(state.date);
-        // Update play/pause button text
-        if (playPauseButton.children && playPauseButton.children.length > 0) {
-            playPauseButton.children[0].text = state.isPlaying ? '⏸' : '▶';
-        }
-        // Update speed button text
-        if (speedButton.children && speedButton.children.length > 0) {
-            speedButton.children[0].text = `${state.speedMultiplier}x`;
-        }
-    });
 
     // Control panel at the bottom
     const controlPanel = new GUI.StackPanel();
@@ -139,6 +113,7 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     controlPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
     controlPanel.top = '-20px';
     controlPanel.height = '50px';
+    controlPanel.isPointerBlocker = false;
     advancedTexture.addControl(controlPanel);
 
     // Previous day button
@@ -202,6 +177,35 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
         onClick: () => dateState.toggleSpeed(),
         parent: controlPanel
     });
+
+    // Update date display when state changes
+    dateState.onUpdate((state) => {
+        dateDisplay.text = formatDate(state.date);
+        // Update play/pause button text
+        if (playPauseButton.children && playPauseButton.children.length > 0) {
+            playPauseButton.children[0].text = state.isPlaying ? '⏸' : '▶';
+        }
+        // Update speed button text
+        if (speedButton.children && speedButton.children.length > 0) {
+            speedButton.children[0].text = `${state.speedMultiplier}x`;
+        }
+    });
+
+    // Now create toggleLabelsButton last so it is on top
+    const toggleLabelsButton = createGuiButton({
+        name: 'toggleLabels',
+        text: 'Show Labels (L)',
+        width: '150px',
+        height: '40px',
+        fontSize: 18,
+        onClick: toggleLabels
+    });
+    toggleLabelsButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    toggleLabelsButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    toggleLabelsButton.top = '10px';
+    toggleLabelsButton.left = '-10px';
+    toggleLabelsButton.isPointerBlocker = true;
+    advancedTexture.addControl(toggleLabelsButton);
 
     // Add keyboard shortcut for 'L' key
     const handleKeydown = (event) => {
