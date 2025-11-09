@@ -56,7 +56,7 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     // Function to toggle labels
     function toggleLabels() {
         labelsVisible = !labelsVisible;
-        updateLabelVisibility();
+        updateVisibility();
         
         // Update button text
         if (toggleButton.children && toggleButton.children.length > 0) {
@@ -76,6 +76,7 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     toggleButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
     toggleButton.top = '10px';
     toggleButton.left = '-10px';
+    toggleButton.isPointerBlocker = true;
     toggleButton.onPointerClickObservable.add(toggleLabels);
     advancedTexture.addControl(toggleButton);
 
