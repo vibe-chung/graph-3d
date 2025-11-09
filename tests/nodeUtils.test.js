@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { getColorForType, calculateNodeValues, calculateNodeRadius } from '../src/nodeUtils.js';
+import { 
+    getColorForType, 
+    calculateNodeValues, 
+    calculateNodeRadius,
+    classifyNode,
+    isIntermediateNode,
+    updateCurrentValuesForDate
+} from '../src/nodeUtils.js';
 
 describe('nodeUtils', () => {
     describe('getColorForType', () => {
@@ -67,7 +74,7 @@ describe('nodeUtils', () => {
 
             const values = calculateNodeValues(nodes, edges);
             expect(values.A).toBe(100); // Source
-            expect(values.B).toBe(50); // Intermediate: 100 - 50
+            expect(values.B).toBe(0); // Intermediate: uses currentValue (defaults to 0)
             expect(values.C).toBe(50); // Sink
         });
 
@@ -95,7 +102,7 @@ describe('nodeUtils', () => {
 
             const values = calculateNodeValues(nodes, edges);
             expect(values.A).toBe(150); // Source: 100 + 50 outgoing
-            expect(values.B).toBe(70); // Intermediate: 100 incoming - 30 outgoing
+            expect(values.B).toBe(0); // Intermediate: uses currentValue (defaults to 0)
             expect(values.C).toBe(80); // Sink: 50 + 30 incoming
         });
     });
@@ -129,6 +136,193 @@ describe('nodeUtils', () => {
         it('should handle negative values using absolute value', () => {
             const radius = calculateNodeRadius(-100);
             expect(radius).toBeCloseTo(1.0, 1); // log10(100) = 2, 0.5 * 2 = 1.0
+        });
+    });
+
+    describe('classifyNode', () => {
+        it('should classify source node correctly', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 }
+            ];
+            expect(classifyNode('A', edges)).toBe('source');
+        });
+
+        it('should classify sink node correctly', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 }
+            ];
+            expect(classifyNode('B', edges)).toBe('sink');
+        });
+
+        it('should classify intermediate node correctly', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 },
+                { from: 'B', to: 'C', weight: 50 }
+            ];
+            expect(classifyNode('B', edges)).toBe('intermediate');
+        });
+
+        it('should classify disconnected node correctly', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 }
+            ];
+            expect(classifyNode('C', edges)).toBe('disconnected');
+        });
+    });
+
+    describe('isIntermediateNode', () => {
+        it('should return true for intermediate node', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 },
+                { from: 'B', to: 'C', weight: 50 }
+            ];
+            expect(isIntermediateNode('B', edges)).toBe(true);
+        });
+
+        it('should return false for source node', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 }
+            ];
+            expect(isIntermediateNode('A', edges)).toBe(false);
+        });
+
+        it('should return false for sink node', () => {
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 }
+            ];
+            expect(isIntermediateNode('B', edges)).toBe(false);
+        });
+    });
+
+    describe('updateCurrentValuesForDate', () => {
+        it('should increment currentValue for target intermediate node when moving forward', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B', currentValue: 100 },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 },
+                { from: 'B', to: 'C', weight: 30, dayOfMonth: 15 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, 1);
+            
+            expect(nodes[1].currentValue).toBe(120); // 100 + 50 (incoming) - 30 (outgoing)
+        });
+
+        it('should decrement currentValue for source intermediate node when moving forward', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B', currentValue: 100 },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 },
+                { from: 'B', to: 'C', weight: 30, dayOfMonth: 15 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, 1);
+            
+            expect(nodes[1].currentValue).toBe(120); // 100 + 50 - 30
+        });
+
+        it('should reverse updates when moving backward', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B', currentValue: 100 },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 },
+                { from: 'B', to: 'C', weight: 30, dayOfMonth: 15 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, -1);
+            
+            expect(nodes[1].currentValue).toBe(80); // 100 - 50 + 30
+        });
+
+        it('should initialize currentValue to 0 if undefined', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B' },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 },
+                { from: 'B', to: 'C', weight: 30, dayOfMonth: 15 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, 1);
+            
+            expect(nodes[1].currentValue).toBe(20); // 0 + 50 - 30
+        });
+
+        it('should only update nodes with matching dayOfMonth', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B', currentValue: 100 },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 },
+                { from: 'B', to: 'C', weight: 30, dayOfMonth: 20 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, 1);
+            
+            expect(nodes[1].currentValue).toBe(150); // Only incoming edge on day 15
+        });
+
+        it('should not update source or sink nodes', () => {
+            const nodes = [
+                { id: 'A', name: 'A', currentValue: 100 },
+                { id: 'B', name: 'B', currentValue: 100 }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 50, dayOfMonth: 15 }
+            ];
+            
+            updateCurrentValuesForDate(nodes, edges, 15, 1);
+            
+            // Source and sink nodes should not be updated
+            expect(nodes[0].currentValue).toBe(100);
+            expect(nodes[1].currentValue).toBe(100);
+        });
+    });
+
+    describe('calculateNodeValues with currentValue', () => {
+        it('should use currentValue for intermediate nodes', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B', currentValue: 250 },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 },
+                { from: 'B', to: 'C', weight: 50 }
+            ];
+
+            const values = calculateNodeValues(nodes, edges);
+            expect(values.A).toBe(100); // Source
+            expect(values.B).toBe(250); // Intermediate: uses currentValue
+            expect(values.C).toBe(50); // Sink
+        });
+
+        it('should default to 0 for intermediate nodes without currentValue', () => {
+            const nodes = [
+                { id: 'A', name: 'A' },
+                { id: 'B', name: 'B' },
+                { id: 'C', name: 'C' }
+            ];
+            const edges = [
+                { from: 'A', to: 'B', weight: 100 },
+                { from: 'B', to: 'C', weight: 50 }
+            ];
+
+            const values = calculateNodeValues(nodes, edges);
+            expect(values.B).toBe(0); // Intermediate: defaults to 0
         });
     });
 });

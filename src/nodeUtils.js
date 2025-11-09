@@ -11,7 +11,29 @@ export function getColorForType(type) {
     return colorMap[type] || colorMap.default;
 }
 
+// Helper function to classify node as source/sink/intermediate
+export function classifyNode(nodeId, edges) {
+    let hasIncoming = false;
+    let hasOutgoing = false;
+    
+    edges.forEach(edge => {
+        if (edge.from === nodeId) hasOutgoing = true;
+        if (edge.to === nodeId) hasIncoming = true;
+    });
+    
+    if (hasOutgoing && !hasIncoming) return 'source';
+    if (hasIncoming && !hasOutgoing) return 'sink';
+    if (hasIncoming && hasOutgoing) return 'intermediate';
+    return 'disconnected';
+}
+
+// Helper function to check if a node is intermediate
+export function isIntermediateNode(nodeId, edges) {
+    return classifyNode(nodeId, edges) === 'intermediate';
+}
+
 // Helper function to calculate node values based on edge weights
+// For intermediate nodes, uses currentValue from node data if present
 export function calculateNodeValues(nodes, edges) {
     const nodeValues = {};
     const incomingWeights = {};
@@ -45,8 +67,8 @@ export function calculateNodeValues(nodes, edges) {
             // Sink node: only has incoming edges
             nodeValues[node.id] = incoming;
         } else if (incoming > 0 && outgoing > 0) {
-            // Intermediate node: has both incoming and outgoing edges
-            nodeValues[node.id] = incoming - outgoing;
+            // Intermediate node: use currentValue from node data (default to 0)
+            nodeValues[node.id] = node.currentValue !== undefined ? node.currentValue : 0;
         } else {
             // No edges (disconnected node)
             nodeValues[node.id] = 0;
@@ -71,4 +93,36 @@ export function calculateNodeRadius(nodeValue) {
     // Ensure minimum radius for visibility
     // For values < 10, log10 will be < 1, so 0.5 * log10 will be < 0.5
     return Math.max(radius, 0.5);
+}
+
+// Helper function to update currentValue for intermediate nodes based on date changes
+// direction: 1 for forward, -1 for backward
+export function updateCurrentValuesForDate(nodes, edges, dayOfMonth, direction = 1) {
+    // Filter edges that match the dayOfMonth
+    const matchingEdges = edges.filter(edge => edge.dayOfMonth === dayOfMonth);
+    
+    // Update currentValue for each intermediate node affected by matching edges
+    matchingEdges.forEach(edge => {
+        // Check if source is intermediate node
+        const sourceNode = nodes.find(n => n.id === edge.from);
+        if (sourceNode && isIntermediateNode(edge.from, edges)) {
+            // When moving forward, decrement (money flows out)
+            // When moving backward, increment (reverse the transaction)
+            if (sourceNode.currentValue === undefined) {
+                sourceNode.currentValue = 0;
+            }
+            sourceNode.currentValue -= edge.weight * direction;
+        }
+        
+        // Check if target is intermediate node
+        const targetNode = nodes.find(n => n.id === edge.to);
+        if (targetNode && isIntermediateNode(edge.to, edges)) {
+            // When moving forward, increment (money flows in)
+            // When moving backward, decrement (reverse the transaction)
+            if (targetNode.currentValue === undefined) {
+                targetNode.currentValue = 0;
+            }
+            targetNode.currentValue += edge.weight * direction;
+        }
+    });
 }

@@ -48,7 +48,7 @@ async function initializeGraph() {
     const edgeMeshes = createEdges(nodes, edges, scene);
 
     // Setup GUI and interactions
-    return setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edges);
+    return setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edges, nodes);
 }
 
 // Store reference to graph instance for cleanup

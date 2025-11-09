@@ -1,6 +1,8 @@
 import { PointerEventTypes } from '@babylonjs/core';
 import * as GUI from '@babylonjs/gui';
 import { createDateState, formatDate } from './dateState.js';
+import { updateCurrentValuesForDate, isIntermediateNode, calculateNodeRadius } from './nodeUtils.js';
+import { updateNodeSize } from './graphRenderer.js';
 
 // Function to get connected nodes for a given node
 function getConnectedNodes(nodeId, edges) {
@@ -35,11 +37,26 @@ function createGuiButton({ name, text, width = '50px', height = '50px', fontSize
 }
 
 // Set up GUI and user interactions
-export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edges) {
+export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edges, nodes) {
     // Create GUI for labels
     const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
     const labelTextBlocks = {};
     let labelsVisible = false;
+
+    // Function to update label text for a node (supports intermediate nodes showing currentValue)
+    function updateLabelText(nodeId) {
+        const label = labelTextBlocks[nodeId];
+        const { node } = nodeLabels[nodeId];
+        if (label && node) {
+            // For intermediate nodes, show currentValue
+            if (isIntermediateNode(nodeId, edges)) {
+                const currentValue = node.currentValue !== undefined ? node.currentValue : 0;
+                label.text = `${node.name} (${currentValue})`;
+            } else {
+                label.text = `${node.name} (${node.value})`;
+            }
+        }
+    }
 
     // Function to create all labels (called once during initialization)
     function createAllLabels() {
@@ -48,7 +65,13 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
             
             const label = new GUI.TextBlock();
             // Display node value in brackets next to the node name
-            label.text = `${node.name} (${node.value})`;
+            // For intermediate nodes, show currentValue
+            if (isIntermediateNode(nodeId, edges)) {
+                const currentValue = node.currentValue !== undefined ? node.currentValue : 0;
+                label.text = `${node.name} (${currentValue})`;
+            } else {
+                label.text = `${node.name} (${node.value})`;
+            }
             label.color = 'white';
             label.fontSize = 14;
             label.outlineWidth = 2;
@@ -178,8 +201,34 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
         parent: controlPanel
     });
 
+    // Track previous date to detect direction of time movement
+    let previousDate = new Date(dateState.getDate());
+
     // Update date display when state changes
     dateState.onUpdate((state) => {
+        const currentDate = state.date;
+        
+        // Determine direction of time movement
+        if (currentDate.getTime() !== previousDate.getTime()) {
+            const direction = currentDate > previousDate ? 1 : -1;
+            const dayOfMonth = direction > 0 ? currentDate.getDate() : previousDate.getDate();
+            
+            // Update currentValue for intermediate nodes
+            updateCurrentValuesForDate(nodes, edges, dayOfMonth, direction);
+            
+            // Update node sizes and labels for intermediate nodes
+            nodes.forEach(node => {
+                if (isIntermediateNode(node.id, edges)) {
+                    const currentValue = node.currentValue !== undefined ? node.currentValue : 0;
+                    const newRadius = calculateNodeRadius(currentValue);
+                    updateNodeSize(nodeMeshes[node.id], newRadius);
+                    updateLabelText(node.id);
+                }
+            });
+            
+            previousDate = new Date(currentDate);
+        }
+        
         dateDisplay.text = formatDate(state.date);
         // Update play/pause button text
         if (playPauseButton.children && playPauseButton.children.length > 0) {
