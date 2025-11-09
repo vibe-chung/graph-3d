@@ -19,6 +19,21 @@ function getConnectedNodes(nodeId, edges) {
     return connected;
 }
 
+// Helper to create a Babylon GUI button with common styling and add to parent
+function createGuiButton({ name, text, width = '50px', height = '50px', fontSize = 24, onClick, parent }) {
+    const btn = GUI.Button.CreateSimpleButton(name, text);
+    btn.width = width;
+    btn.height = height;
+    btn.color = 'white';
+    btn.cornerRadius = 5;
+    btn.background = 'rgba(0, 0, 0, 0.5)';
+    btn.thickness = 2;
+    btn.fontSize = fontSize;
+    if (onClick) btn.onPointerClickObservable.add(onClick);
+    if (parent) parent.addControl(btn);
+    return btn;
+}
+
 // Set up GUI and user interactions
 export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edges) {
     // Create GUI for labels
@@ -59,26 +74,26 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
         updateVisibility();
         
         // Update button text
-        if (toggleButton.children && toggleButton.children.length > 0) {
-            toggleButton.children[0].text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
+        if (toggleLabelsButton.children && toggleLabelsButton.children.length > 0) {
+            toggleLabelsButton.children[0].text = labelsVisible ? 'Hide Labels (L)' : 'Show Labels (L)';
         }
     }
 
     // Create toggle button
-    const toggleButton = GUI.Button.CreateSimpleButton('toggleLabels', 'Show Labels (L)');
-    toggleButton.width = '150px';
-    toggleButton.height = '40px';
-    toggleButton.color = 'white';
-    toggleButton.cornerRadius = 5;
-    toggleButton.background = 'rgba(0, 0, 0, 0.5)';
-    toggleButton.thickness = 2;
-    toggleButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-    toggleButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-    toggleButton.top = '10px';
-    toggleButton.left = '-10px';
-    toggleButton.isPointerBlocker = true;
-    toggleButton.onPointerClickObservable.add(toggleLabels);
-    advancedTexture.addControl(toggleButton);
+    const toggleLabelsButton = createGuiButton({
+        name: 'toggleLabels',
+        text: 'Show Labels (L)',
+        width: '150px',
+        height: '40px',
+        fontSize: 18,
+        onClick: toggleLabels
+    });
+    toggleLabelsButton.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    toggleLabelsButton.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    toggleLabelsButton.top = '10px';
+    toggleLabelsButton.left = '-10px';
+    toggleLabelsButton.isPointerBlocker = true;
+    advancedTexture.addControl(toggleLabelsButton);
 
     // Initialize labels (create them once, hidden by default)
     createAllLabels();
@@ -127,18 +142,12 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     advancedTexture.addControl(controlPanel);
 
     // Previous day button
-    const prevButton = GUI.Button.CreateSimpleButton('prevDay', '◀');
-    prevButton.width = '50px';
-    prevButton.height = '50px';
-    prevButton.color = 'white';
-    prevButton.cornerRadius = 5;
-    prevButton.background = 'rgba(0, 0, 0, 0.5)';
-    prevButton.thickness = 2;
-    prevButton.fontSize = 24;
-    prevButton.onPointerClickObservable.add(() => {
-        dateState.previousDay();
+    const prevButton = createGuiButton({
+        name: 'prevDay',
+        text: '◀',
+        onClick: () => dateState.previousDay(),
+        parent: controlPanel
     });
-    controlPanel.addControl(prevButton);
 
     // Spacer
     const spacer1 = new GUI.Container();
@@ -146,18 +155,12 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     controlPanel.addControl(spacer1);
 
     // Play/Pause button
-    const playPauseButton = GUI.Button.CreateSimpleButton('playPause', '▶');
-    playPauseButton.width = '50px';
-    playPauseButton.height = '50px';
-    playPauseButton.color = 'white';
-    playPauseButton.cornerRadius = 5;
-    playPauseButton.background = 'rgba(0, 0, 0, 0.5)';
-    playPauseButton.thickness = 2;
-    playPauseButton.fontSize = 24;
-    playPauseButton.onPointerClickObservable.add(() => {
-        dateState.togglePlayPause();
+    const playPauseButton = createGuiButton({
+        name: 'playPause',
+        text: '▶',
+        onClick: () => dateState.togglePlayPause(),
+        parent: controlPanel
     });
-    controlPanel.addControl(playPauseButton);
 
     // Spacer
     const spacer2 = new GUI.Container();
@@ -165,18 +168,12 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     controlPanel.addControl(spacer2);
 
     // Next day button
-    const nextButton = GUI.Button.CreateSimpleButton('nextDay', '▶▶');
-    nextButton.width = '50px';
-    nextButton.height = '50px';
-    nextButton.color = 'white';
-    nextButton.cornerRadius = 5;
-    nextButton.background = 'rgba(0, 0, 0, 0.5)';
-    nextButton.thickness = 2;
-    nextButton.fontSize = 24;
-    nextButton.onPointerClickObservable.add(() => {
-        dateState.nextDay();
+    const nextButton = createGuiButton({
+        name: 'nextDay',
+        text: '▶▶',
+        onClick: () => dateState.nextDay(),
+        parent: controlPanel
     });
-    controlPanel.addControl(nextButton);
 
     // Spacer
     const spacer3 = new GUI.Container();
@@ -184,18 +181,13 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     controlPanel.addControl(spacer3);
 
     // Reset button
-    const resetButton = GUI.Button.CreateSimpleButton('reset', '↻');
-    resetButton.width = '50px';
-    resetButton.height = '50px';
-    resetButton.color = 'white';
-    resetButton.cornerRadius = 5;
-    resetButton.background = 'rgba(0, 0, 0, 0.5)';
-    resetButton.thickness = 2;
-    resetButton.fontSize = 28;
-    resetButton.onPointerClickObservable.add(() => {
-        dateState.reset();
+    const resetButton = createGuiButton({
+        name: 'reset',
+        text: '↻',
+        fontSize: 28,
+        onClick: () => dateState.reset(),
+        parent: controlPanel
     });
-    controlPanel.addControl(resetButton);
 
     // Spacer
     const spacer4 = new GUI.Container();
@@ -203,18 +195,13 @@ export function setupInteractions(scene, nodeLabels, nodeMeshes, edgeMeshes, edg
     controlPanel.addControl(spacer4);
 
     // Speed multiplier button
-    const speedButton = GUI.Button.CreateSimpleButton('speed', '1x');
-    speedButton.width = '50px';
-    speedButton.height = '50px';
-    speedButton.color = 'white';
-    speedButton.cornerRadius = 5;
-    speedButton.background = 'rgba(0, 0, 0, 0.5)';
-    speedButton.thickness = 2;
-    speedButton.fontSize = 18;
-    speedButton.onPointerClickObservable.add(() => {
-        dateState.toggleSpeed();
+    const speedButton = createGuiButton({
+        name: 'speed',
+        text: '1x',
+        fontSize: 18,
+        onClick: () => dateState.toggleSpeed(),
+        parent: controlPanel
     });
-    controlPanel.addControl(speedButton);
 
     // Add keyboard shortcut for 'L' key
     const handleKeydown = (event) => {
