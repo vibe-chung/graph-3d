@@ -9,7 +9,8 @@
     "id": "Paris",
     "name": "Paris",
     "type": "primary",
-    "tags": ["Current"]
+    "tags": ["Current"],
+    "currentValue": 500
   },
   {
     "id": "Berlin",
@@ -63,7 +64,8 @@
     "id": "Boston",
     "name": "Boston",
     "type": "primary",
-    "tags": ["Current"]
+    "tags": ["Current"],
+    "currentValue": 1000
   },
   {
     "id": "Dallas",

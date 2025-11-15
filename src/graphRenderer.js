@@ -32,6 +32,16 @@ export function createNodes(nodes, scene) {
     return { nodeMeshes, nodeLabels };
 }
 
+// Update node size based on new radius
+export function updateNodeSize(nodeMesh, newRadius) {
+    if (nodeMesh) {
+        const newDiameter = newRadius * 2;
+        nodeMesh.scaling.x = newDiameter / nodeMesh.getBoundingInfo().boundingBox.extendSize.x / 2;
+        nodeMesh.scaling.y = newDiameter / nodeMesh.getBoundingInfo().boundingBox.extendSize.y / 2;
+        nodeMesh.scaling.z = newDiameter / nodeMesh.getBoundingInfo().boundingBox.extendSize.z / 2;
+    }
+}
+
 // Helper function to create arrow (cylinder + cone)
 export function createArrow(from, to, scene) {
     const direction = to.subtract(from);
